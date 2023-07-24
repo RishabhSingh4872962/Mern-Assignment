@@ -3,83 +3,82 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: [true, "firstName should must be provide"],
-    min: [3, "name should be greater than 3"],
-    max: [8, "name should be less than 12"],
+    required: [true, "First name must be provided"],
+    minlength: [3, "First name should be at least 3 characters long"],
+    maxlength: [8, "First name should be less than 8 characters"],
   },
   lastName: {
     type: String,
-    required: [true, "lastName should must be provide"],
-    min: [3, "name should be greater than 3"],
-    max: [8, "name should be less than 12"],
+    required: [true, "Last name must be provided"],
+    minlength: [3, "Last name should be at least 3 characters long"],
+    maxlength: [8, "Last name should be less than 8 characters"],
   },
   email: {
     type: String,
-    required: [true, "email should must be provide"],
-    unique: [true, "email should be unqiue"],
+    required: [true, "Email must be provided"],
+    unique: [true, "Email must be unique"],
+    validate: {
+      validator: function (email) {
+        // You can use a regular expression or a library like 'validator' to validate email format
+        // Example using 'validator': return validator.isEmail(email);
+        // Replace the following line with the actual validation code.
+        return /\S+@\S+\.\S+/.test(email);
+      },
+      message: "Invalid email format",
+    },
   },
   phone: {
-    type: Object,
-    required: [true, "phone should must be provide"],
-    countryCode:{
-      type:String,
-      required:[true,"country code must provided"]
-    },
-    number:{
-      type:Number,
-      required:[true,"phone should be unqiue"],
-      unique: [true, "phone should be unqiue"],
-      validate: {
-        validator: function (num) {
-          return num.toString().length>6;
+    type: {
+      countryCode: {
+        type: String,
+        required: [true, "Country code must be provided"],
+      },
+      number: {
+        type: Number,
+        required: [true, "Phone number must be provided"],
+        unique: [true, "Phone number must be unique"],
+        validate: {
+          validator: function (num) {
+            return num.toString().length > 6;
+          },
+          message: "Phone number length should be greater than 6",
         },
-        message: `phone number length should be equal to 6`,
-      }
-    }
+      },
+    },
+    required: [true, "Phone must be provided"],
   },
   gender: {
     type: String,
-    required: [true, "gender should must be provide"],
+    required: [true, "Gender must be provided"],
     enum: ["male", "female", "trans", "not to disclose"],
   },
   age: {
     type: Number,
-    required: [true, "age should must be provide"],
+    required: [true, "Age must be provided"],
     validate: {
       validator: function (age) {
         return age >= 10 && age <= 80;
       },
-      message: `age should be greater than 10 and less than 80`,
+      message: "Age should be between 10 and 80",
     },
   },
   password: {
     type: String,
-    required: [true, "password should must be provide"],
-    min: [6, "password should be greater than 6"],
-    max: [15, "password should be less than 18"],
+    required: [true, "Password must be provided"],
+    minlength: [6, "Password should be at least 6 characters long"],
+    maxlength: [15, "Password should be less than 15 characters"],
   },
   address: {
-    type: Object,
-    required: [true, "address should must be provide"],
-    street: {
-      type: String,
-      required: true,
+    type: {
+      street: { type: String, required: [true, "Street must be provided"] },
+      city: { type: String, required: [true, "City must be provided"] },
+      pincode: { type: String, required: [true, "Pincode must be provided"] },
+      country: { type: String, required: [true, "Country must be provided"] },
     },
-    city: {
-      type: String,
-      required: true,
-    },
-    pincode: {
-      type: String,
-      required: true,
-    },
-    country: {
-      type: String,
-      required: true,
-    }
+    required: [true, "Address must be provided"],
   },
 });
 
-const userModel = new mongoose.model("users", userSchema);
+const userModel = mongoose.model("users", userSchema);
 
 module.exports = { userModel };
